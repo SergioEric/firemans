@@ -10,9 +10,14 @@ dependencies:
   firebase_core: ^0.4.4+3
   cloud_firestore: ^0.13.5
   firebase_messaging: ^6.0.13
+  firebase_auth: ^0.16.0
   permission_handler: ^5.0.0+hotfix.3
   google_fonts: ^1.0.0
   provider: ^4.0.5
+  maps_launcher: ^1.2.0
+  google_maps_flutter: ^0.5.27
+  # google_maps_webservice: ^0.0.16
+  shared_preferences: ^0.5.7
   flutter:
     sdk: flutter
 

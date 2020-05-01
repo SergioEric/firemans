@@ -1,0 +1,138 @@
+{
+  "project_info": {
+    "project_number": "506100930772",
+    "firebase_url": "https://alertov1.firebaseio.com",
+    "project_id": "alertov1",
+    "storage_bucket": "alertov1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:506100930772:android:c261fc3b3770063c5c0341",
+        "android_client_info": {
+          "package_name": "com.falerapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "506100930772-4cpf55vqn7uq71c7ei2p5ub1j5rj9224.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.falerapp",
+            "certificate_hash": "fd105f37b07b9c99911460b1961dec222c43d319"
+          }
+        },
+        {
+          "client_id": "506100930772-o8kk55ojghhgl8ep3fh9jrqcl62a7oca.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.falerapp",
+            "certificate_hash": "528697d4df8df41c2b9801a322cab2734b0020fc"
+          }
+        },
+        {
+          "client_id": "506100930772-4bhbgmahhijtv8bkn443g09klesonilb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8P7ygoABCI4ME-F9yPUrz5qbdD7zteuk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "506100930772-4bhbgmahhijtv8bkn443g09klesonilb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:506100930772:android:e6ecb7693025fe5a5c0341",
+        "android_client_info": {
+          "package_name": "com.falerapp.bomberos"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "506100930772-0n1vmmng67l661cumgunagi4mo5kopq0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.falerapp.bomberos",
+            "certificate_hash": "528697d4df8df41c2b9801a322cab2734b0020fc"
+          }
+        },
+        {
+          "client_id": "506100930772-4bhbgmahhijtv8bkn443g09klesonilb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8P7ygoABCI4ME-F9yPUrz5qbdD7zteuk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "506100930772-4bhbgmahhijtv8bkn443g09klesonilb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:506100930772:android:ccbbd76074c547865c0341",
+        "android_client_info": {
+          "package_name": "tech.sergioeric.alertov1.alertov1"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "506100930772-mlrd5u0h9j9v6cmhmeja5ciahtuovtk6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "tech.sergioeric.alertov1.alertov1",
+            "certificate_hash": "528697d4df8df41c2b9801a322cab2734b0020fc"
+          }
+        },
+        {
+          "client_id": "506100930772-4jenrn1v3p7b4kgn1eg5nii1moj2kokg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "tech.sergioeric.alertov1.alertov1",
+            "certificate_hash": "fd105f37b07b9c99911460b1961dec222c43d319"
+          }
+        },
+        {
+          "client_id": "506100930772-4bhbgmahhijtv8bkn443g09klesonilb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8P7ygoABCI4ME-F9yPUrz5qbdD7zteuk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "506100930772-4bhbgmahhijtv8bkn443g09klesonilb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
