@@ -4,6 +4,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 import 'actions_providers/firestore_actions.dart';
 import 'actions_providers/login_action.dart';
+import 'pages/on_alert_coming_page.dart';
 import 'providers/push_notifications_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -45,16 +46,47 @@ void main() async {
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   // This widget is the root of your application.
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+
+  final GlobalKey<NavigatorState> navigatorkey = GlobalKey<NavigatorState>();
+  final pushProvider = new PushNotificationProvider();
+
+  @override
+  void initState() {
+    super.initState();
+    pushProvider.message.listen((message){
+      print(message);
+      navigatorkey.currentState.pushNamed("on_alert_coming", arguments: message);
+    });
+
+  } 
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    pushProvider.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
         debugShowCheckedModeBanner: false,
+        navigatorKey: navigatorkey,
         title: 'Bomberos',
         theme: ThemeData(
         ),
         home: HomePage(),
+        routes: {
+          'home' : (_)=>HomePage(),
+          'on_alert_coming' : (_)=>OnAlertComingPage()
+        },
       );
   }
 }

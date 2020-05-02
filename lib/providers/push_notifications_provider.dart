@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 class PushNotificationProvider {
@@ -12,6 +14,11 @@ class PushNotificationProvider {
 
   FirebaseMessaging _firebaseMessaging;
 
+  StreamController _streamController = StreamController<String>.broadcast();
+
+  Stream<String> get message => _streamController.stream;
+
+ 
   createContrustor(){
     this._firebaseMessaging = FirebaseMessaging();
   }
@@ -26,7 +33,8 @@ class PushNotificationProvider {
       onMessage: (Map<String, dynamic> message) async {
         print("············· onMessage: $message");
         print("DateTime.now() = ${DateTime.now()}");
-        // print(message);
+        String docId = message["data"]["id"] ?? 'no-data';
+        _streamController.sink.add(docId);
       },
       // onBackgroundMessage: myBackgroundMessageHandler,
       onLaunch: (Map<String, dynamic> message) async {
@@ -36,7 +44,12 @@ class PushNotificationProvider {
       onResume: (Map<String, dynamic> message) async {
         print("············· onResume: $message");
         // print(message);
+        String docId = message["data"]["id"] ?? 'no-data';
+        _streamController.sink.add(docId);
       },
     );
+  }
+  dispose(){
+    _streamController?.close();
   }
 }
