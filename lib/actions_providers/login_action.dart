@@ -5,7 +5,7 @@ class FirebaseAuthentication{
 
 
   Future<AuthResult>login() async {
-    AuthResult authUser = await _firebaseAuth.signInAnonymously();
+    AuthResult authUser = await _firebaseAuth.signInWithEmailAndPassword(email: "bb@gmail.com", password: "123456");
 
     return authUser ?? null;
   }
@@ -13,5 +13,9 @@ class FirebaseAuthentication{
   Future<bool> isSignedIn() async {
     final currentUser = await _firebaseAuth.currentUser();
     return currentUser != null;
+  }
+
+  void getLogOut() async {
+    return await _firebaseAuth.signOut();
   }
 }

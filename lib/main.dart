@@ -96,6 +96,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final prefs = new UserPreferences();
     askForPermissions();
+    final FirebaseAuthentication auth = FirebaseAuthentication();
     return Scaffold(
       body: Center(
         child: Stack(
@@ -106,6 +107,12 @@ class HomePage extends StatelessWidget {
             //   onPressed: () => MapsLauncher.launchCoordinates(8.9372859, -75.4413706),
             //   child: Text('LAUNCH COORDINATES'),
             // ),
+            Align(
+              child: FloatingActionButton(
+                onPressed: ()=>auth.getLogOut(),
+                child: Icon(Icons.restore),
+              ),
+            ),
             Align(
               alignment: Alignment.bottomRight,
                 child: FloatingActionButton(

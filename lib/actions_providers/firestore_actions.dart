@@ -33,4 +33,18 @@ class FirestoreActions {
     });
   }
 
+  Future<dynamic> getDocument(documentRef) async {
+    DocumentSnapshot doc = await alertCollection.document(documentRef).get();
+    dynamic data;
+    if (doc.exists){
+      data = {
+        "imageUrl"  : doc.data["getDownloadUrl"] as String,
+        "catagory"  : doc.data["categories"] as String,
+        "latitude"  : doc.data["latitude"] as double,
+        "longitude" : doc.data["longitude"] as double
+      };
+    }
+    return data;
+  }
+
 }
