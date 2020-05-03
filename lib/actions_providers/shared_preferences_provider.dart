@@ -31,16 +31,33 @@ class UserPreferences {
   void setPushToken(String value) async {
     await _prefs.setString('token', value);
   }
-  // int processState() {
-  //   return _prefs.getInt('state') ?? null;
-  // }
 
-  // setProcessState(int value) async {
-  //   await _prefs.setInt('state', value);
-  // }
+  Future<void> removePushToken() async {
+    await _prefs.remove('token');
+  }
+  
+  void setState(int value)async {
+    await _prefs.setInt('state', value);
+  }
+  int getState() {
+    return _prefs.getInt('state') ?? null;
+  }
+  
+  Future<void> removeState() async {
+    await _prefs.remove('state');
+  }
 
+  String getDocumentAlertId(){
+    return _prefs.getString('documentId') ?? null;
+  }
 
-  void cleanAll() async {
+  Future<void> setDocumentAlertId(String value) async {
+    await _prefs.setString('documentId', value);
+  }
+  Future<void> removeDocumentAlertId() async {
+    await _prefs.remove('documentId');
+  }
+  Future<void>  cleanAll() async {
     await _prefs.clear();
   }
 

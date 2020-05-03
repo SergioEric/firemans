@@ -1,12 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 
+import '../models/alert.model.dart';
 // import './shared_preferences_provider.dart';
 class FirestoreActions {
 
-  FirestoreActions();
+  static final FirestoreActions _instancia = new FirestoreActions._internal();
 
-  // static final prefs = new UserPreferences();
+  factory FirestoreActions() {
+    return _instancia;
+  }
+
+  FirestoreActions._internal();
 
   // final String pushToken = prefs.getPushToken();
   final alertCollection = Firestore.instance.collection("alerts");
@@ -27,23 +32,27 @@ class FirestoreActions {
 
   Future<void> acceptOrRejectAlert({
     @required String document,
-    @required int state}){
-    alertCollection.document(document).updateData({
+    @required int state}) async{
+    await alertCollection.document(document).updateData({
       "state" : state
     });
   }
 
-  Future<dynamic> getDocument(documentRef) async {
+  Future<AlertInformation> getDocument(documentRef) async {
     DocumentSnapshot doc = await alertCollection.document(documentRef).get();
-    dynamic data;
+    AlertInformation data;
     if (doc.exists){
-      data = {
-        "imageUrl"  : doc.data["getDownloadUrl"] as String,
-        "catagory"  : doc.data["categories"] as String,
-        "latitude"  : doc.data["latitude"] as double,
-        "longitude" : doc.data["longitude"] as double
-      };
+      data = AlertInformation(
+        imageUrl  : doc.data["getDownloadUrl"] as String,
+        category  : doc.data["categories"] as String,
+        latitude  : doc.data["latitude"] as double,
+        longitude : doc.data["longitude"] as double,
+        userId    : doc.data["userId"] as String,
+        state     : doc.data["state"] as int,
+        created   :  DateTime.tryParse(doc.data["created"].toString())
+      );
     }
+
     return data;
   }
 

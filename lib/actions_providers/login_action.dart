@@ -9,6 +9,11 @@ class FirebaseAuthentication{
 
     return authUser ?? null;
   }
+  Future<AuthResult>register() async {
+    AuthResult authUser = await _firebaseAuth.createUserWithEmailAndPassword(email: "bb@gmail.com", password: "123456");
+
+    return authUser ?? null;
+  }
 
   Future<bool> isSignedIn() async {
     final currentUser = await _firebaseAuth.currentUser();

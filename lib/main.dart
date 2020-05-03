@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:maps_launcher/maps_launcher.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import 'actions_providers/firestore_actions.dart';
 import 'actions_providers/login_action.dart';
+import 'pages/home_page.dart';
 import 'pages/on_alert_coming_page.dart';
 import 'providers/push_notifications_provider.dart';
 import 'package:provider/provider.dart';
@@ -11,6 +13,7 @@ import 'package:provider/provider.dart';
 import 'actions_providers/shared_preferences_provider.dart';
 
 import './pages/maps.page.dart';
+import './pages/video_call_page.dart';
 
 
 void main() async {
@@ -36,6 +39,7 @@ void main() async {
     print("token SI existe en prefs");
     token= prefs.getPushToken();
   }else{
+    await authUser.login();
     print("token no existe en prefs");
     token = await pushProvider.initNotifications();
     await fstore.saveTokenToFireStore(token);
@@ -62,14 +66,23 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     pushProvider.message.listen((message){
       print(message);
-      navigatorkey.currentState.pushNamed("on_alert_coming", arguments: message);
+      if(message.length > 5) {
+        // if is not a call, 
+        navigatorkey.currentState.pushReplacementNamed("on_alert_coming", arguments: message);
+      }
+      // switch(message){
+      //   case 'audio':
+      //     navigatorkey.currentState.pushNamed("video_call_page", arguments: message);
+      //     break;
+      //   default:
+      //     break;
+      // }
     });
 
   } 
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
     pushProvider.dispose();
   }
@@ -85,60 +98,10 @@ class _MyAppState extends State<MyApp> {
         home: HomePage(),
         routes: {
           'home' : (_)=>HomePage(),
-          'on_alert_coming' : (_)=>OnAlertComingPage()
+          'on_alert_coming' : (_)=>OnAlertComingPage(),
+          'video_call_page' : (_)=>VideoCallPage()
         },
       );
   }
 }
 
-class HomePage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final prefs = new UserPreferences();
-    askForPermissions();
-    final FirebaseAuthentication auth = FirebaseAuthentication();
-    return Scaffold(
-      body: Center(
-        child: Stack(
-          // mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            // MapsPage(),
-            // RaisedButton(
-            //   onPressed: () => MapsLauncher.launchCoordinates(8.9372859, -75.4413706),
-            //   child: Text('LAUNCH COORDINATES'),
-            // ),
-            Align(
-              child: FloatingActionButton(
-                onPressed: ()=>auth.getLogOut(),
-                child: Icon(Icons.restore),
-              ),
-            ),
-            Align(
-              alignment: Alignment.bottomRight,
-                child: FloatingActionButton(
-                onPressed: ()=>prefs.cleanAll(),
-                child: Icon(Icons.clear_all),
-              ),
-            )
-          ],
-        )
-      ),
-    );
-  }
-    void askForPermissions() async {
-    Map<Permission, PermissionStatus> statuses; 
-    await Future.delayed(Duration(milliseconds: 2000),() async {
-      statuses = await [
-        Permission.location,
-        // Permission.camera,
-        // Permission.storage,
-        // Permission.microphone
-      ].request();
-    });
-    print(statuses[Permission.location]);
-    if(statuses[Permission.location] == PermissionStatus.granted){
-      print("statuses[Permission.location] == PermissionStatus.granted");
-    }
-  }
-
-}
