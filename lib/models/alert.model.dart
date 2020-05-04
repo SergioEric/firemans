@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class AlertInformation{
 
   final String userId;
@@ -6,7 +8,7 @@ class AlertInformation{
   final String category;
   final String imageUrl;
   final int state;
-  final DateTime created;
+  final Timestamp created;
 
   AlertInformation(
   {  this.userId,

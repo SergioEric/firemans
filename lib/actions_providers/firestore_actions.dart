@@ -49,7 +49,7 @@ class FirestoreActions {
         longitude : doc.data["longitude"] as double,
         userId    : doc.data["userId"] as String,
         state     : doc.data["state"] as int,
-        created   :  DateTime.tryParse(doc.data["created"].toString())
+        created   :  doc.data["created"]
       );
     }
 

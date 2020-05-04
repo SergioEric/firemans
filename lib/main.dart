@@ -7,6 +7,7 @@ import 'actions_providers/firestore_actions.dart';
 import 'actions_providers/login_action.dart';
 import 'pages/home_page.dart';
 import 'pages/on_alert_coming_page.dart';
+import 'providers/alert_created_time.dart';
 import 'providers/push_notifications_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -89,19 +90,22 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        navigatorKey: navigatorkey,
-        title: 'Bomberos',
-        theme: ThemeData(
+    return ChangeNotifierProvider(
+      create: (_)=>CreatedTimeProvider(),
+          child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          navigatorKey: navigatorkey,
+          title: 'Bomberos',
+          theme: ThemeData(
+          ),
+          home: HomePage(),
+          routes: {
+            'home' : (_)=>HomePage(),
+            'on_alert_coming' : (_)=>OnAlertComingPage(),
+            'video_call_page' : (_)=>VideoCallPage()
+          },
         ),
-        home: HomePage(),
-        routes: {
-          'home' : (_)=>HomePage(),
-          'on_alert_coming' : (_)=>OnAlertComingPage(),
-          'video_call_page' : (_)=>VideoCallPage()
-        },
-      );
+    );
   }
 }
 
