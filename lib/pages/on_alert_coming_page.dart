@@ -17,6 +17,8 @@ import '../models/alert.model.dart';
 import './maps.page.dart';
 import './widgets/styling.dart';
 
+import 'package:vector_math/vector_math_64.dart' show Vector3;
+
 class OnAlertComingPage extends StatefulWidget {
   @override
   _OnAlertComingPageState createState() => _OnAlertComingPageState();
@@ -26,8 +28,11 @@ class _OnAlertComingPageState extends State<OnAlertComingPage> {
   FirestoreActions fstore;
 
   double _scale = 1.0;
+  double _rotate = 0.0;
+  // Offset _translate = Offset(0,0);
   double _previusScale = 1.0;
-  int alertAcepted = 0;
+  double _previusRotate = 1.0;
+  // int alertAcepted = 0;
   // Offset position = Offset(0,0);
   bool showCallBox = false;
   int difference = 0;
@@ -38,7 +43,7 @@ class _OnAlertComingPageState extends State<OnAlertComingPage> {
     super.initState();
     fstore = FirestoreActions();
     pushProvider.message.listen((message){
-      print(message);
+      // print(message);
       switch(message){
         case 'video':
           showCallBox = true;
@@ -53,16 +58,19 @@ class _OnAlertComingPageState extends State<OnAlertComingPage> {
   _onScaleStart(ScaleStartDetails details){
     _previusScale = _scale;
     setState(() {});
-    print(details);
+    // print(details);
   }
   _onScaleUpdate(ScaleUpdateDetails details){
-    _scale = _previusScale * details.scale;
+    _scale = (_previusScale * details.scale < 1)? 1 : _previusScale * details.scale ;
+    _rotate = _previusRotate * details.rotation;
+    // _translate = details.localFocalPoint;
     setState(() {});
-    print(details);
+    // print(details.scale);
   }
 
   _onScaleEnd(ScaleEndDetails details){
     _previusScale = 1.0;
+    _previusRotate = 1.0;
     setState(() {});
     print("_onScaleEnd");
   }
@@ -84,14 +92,14 @@ class _OnAlertComingPageState extends State<OnAlertComingPage> {
     final prefs = new UserPreferences();
     final alert = fstore.getDocument(doc);
     final size = MediaQuery.of(context).size;
-    print("prefs.getState ==  ${prefs.getState()}");
+    // print("prefs.getState ==  ${prefs.getState()}");
     CreatedTimeProvider provider = Provider.of<CreatedTimeProvider>(context, listen: false);
     Color notColor = (prefs.getState() == 1) ? my_green : (prefs.getState() == 2) ? my_red : obscure; 
     return WillPopScope(
       onWillPop: ()async=>false,
       child: Scaffold(
         backgroundColor: Colors.white,
-        drawer: (prefs.getState() == 1) ? acceptedStateDrawer() : (prefs.getState() == 2) ? rejectedStateDrawer() : (prefs.getState() == 3) ? doneStateDrawer() : pendingStateDrawer(),
+        drawer: (prefs.getState() == 1) ? acceptedStateDrawer(doc) : (prefs.getState() == 2) ? rejectedStateDrawer() : (prefs.getState() == 3) ? doneStateDrawer() : pendingStateDrawer(),
         body: Stack(
           // mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -131,11 +139,14 @@ class _OnAlertComingPageState extends State<OnAlertComingPage> {
                         onScaleStart: _onScaleStart,
                         onScaleUpdate:_onScaleUpdate,
                         onScaleEnd: _onScaleEnd,
-                        child: Transform.scale(
-                        scale: (_scale < 1) ? 1 : _scale,
-                        child: FadeInImage.assetNetwork(placeholder: "assets/Spin-1s-480px.gif",
-                        image: snapshot.data.imageUrl, height: 512,),
-                          ),
+                        child: Transform(
+                          alignment: FractionalOffset.center,
+                          transform: Matrix4.diagonal3(Vector3(_scale,_scale,_scale))
+                            ..rotateZ(_rotate),
+                            // ..translate((_translate.dx - (size.width/2)), (_translate.dy - (size.height/2))) ,
+                          child: FadeInImage.assetNetwork(placeholder: "assets/Spin-1s-480px.gif",
+                          image: snapshot.data.imageUrl, height: 512,),
+                        ),
                       ),
                     ),
                     // Text(snapshot.data.userId)
@@ -147,21 +158,24 @@ class _OnAlertComingPageState extends State<OnAlertComingPage> {
                       color: Colors.red,
                       size: 60,
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 16),
-                      child: Text('Error: ${snapshot.error}'),
+                    Container(
+                      alignment: Alignment.center,
+                      child: Text('Error: ${snapshot.error}', style:firemanStateMessageTextStyle, textAlign: TextAlign.center,),
                     )
                   ];
                 }else {
                   children = <Widget>[
-                    SizedBox(
-                      child: CircularProgressIndicator(),
-                      width: 60,
-                      height: 60,
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.only(top: 16),
-                      child: Text('Cargando datos...'),
+                    Container(
+                      alignment: Alignment.center,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min ,children: <Widget>[
+                        SizedBox(
+                          child: CircularProgressIndicator(),
+                          width: 60,
+                          height: 60,
+                        ),
+                        Text('...cargando datos', style:firemanStateMessageTextStyle, textAlign: TextAlign.center,)
+                      ],),
                     )
                   ];
                 }
@@ -188,9 +202,10 @@ class _OnAlertComingPageState extends State<OnAlertComingPage> {
                         padding: EdgeInsets.all(8),
                         child: Icon(Icons.done, color: Colors.white,),
                         fillColor:Colors.green,  
-                        onPressed: (){
+                        onPressed: () async{
                           //TODO hide action buttons
-                          fstore.acceptOrRejectAlert(document: doc, state: 1);
+                          await fstore.acceptOrRejectAlert(document: doc, state: 1);
+                          await fstore.updateState(true);
                           // alertAcepted = 1;
                           prefs.setState(1);
                           setState(() {
@@ -223,15 +238,17 @@ class _OnAlertComingPageState extends State<OnAlertComingPage> {
                                   child: Text("Si",style: TextStyle(fontSize: 20),),
                                   onPressed: () async{
                                     await fstore.acceptOrRejectAlert(document: doc, state: 2);
-                                    prefs.setState(2);
+                                    // prefs.setState(2);
                                     // if(prefs.getState() != null){
-                                      // await prefs.removeState();
-                                      // await prefs.removeDocumentAlertId();
-                                    // }
+                                      // ? alert rejected
+                                    await prefs.removeState();
+                                    await prefs.removeDocumentAlertId();
                                     Navigator.pop(context);
-                                    alertAcepted = 2;
-                                    setState(() {
-                                    });
+                                    Navigator.of(context).pushReplacementNamed("home");
+                                    // }
+                                    // alertAcepted = 2;
+                                    // setState(() {
+                                    // });
                                   }
                                 ),
                                 FlatButton(
@@ -261,6 +278,10 @@ class _OnAlertComingPageState extends State<OnAlertComingPage> {
                 child: mapsButton())
             ),
             (showCallBox) ? onCallInComing() : Container(), // ? calling
+            Align(
+                alignment: Alignment.bottomCenter,
+                child: SizedBox(height: size.height * 0.01,
+                  child: Container(color:primary),))
             // (prefs.getState() == 0) ?
             //   Container(child: Align(
             //     alignment: Alignment.bottomRight,
@@ -285,9 +306,9 @@ class _OnAlertComingPageState extends State<OnAlertComingPage> {
         RawMaterialButton(
           onPressed: (){
             print("goto maps");
-            // Navigator.of(context).push(
-            //   MaterialPageRoute(builder: (_)=>MapsPage())
-            // );
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (_)=>MapsPage())
+            );
           },
           // shape: CircleBorder(),
           child: Image.asset("assets/iconfinder_rounded_maps.png", width: 88,),
@@ -381,7 +402,8 @@ class _OnAlertComingPageState extends State<OnAlertComingPage> {
       ),
     );
   }
-  Drawer acceptedStateDrawer(){
+  Drawer acceptedStateDrawer(String doc){
+    final prefs = UserPreferences();
     return Drawer(
       child: Consumer<CreatedTimeProvider>(
         builder: (context,state,child){
@@ -404,8 +426,15 @@ class _OnAlertComingPageState extends State<OnAlertComingPage> {
               Text("Han pasado ${state.getMinutes()} minutos", style:alertTimertStyle, textAlign: TextAlign.center,),
               FlatButton(
                 // color: secondary,
-                onPressed: (){},
-                child: Text("marcar como leida", style:markAsReadedText,),
+                onPressed: () async {
+                  // ? accepted alert
+                  await fstore.acceptOrRejectAlert(document: doc, state: 3);
+                  await fstore.updateState(false);
+                  await prefs.removeState();
+                  await prefs.removeDocumentAlertId();
+                  Navigator.of(context).pushReplacementNamed("app");
+                },
+                child: Text("marcar como atendida", style:markAsReadedText,),
               ),
               SizedBox(height: 60,),
             ],),
@@ -415,6 +444,7 @@ class _OnAlertComingPageState extends State<OnAlertComingPage> {
     );
   }
   Drawer doneStateDrawer(){
+    final prefs = new UserPreferences();
     return Drawer(
       child: Consumer<CreatedTimeProvider>(
         builder: (context,state, child){
@@ -437,7 +467,11 @@ class _OnAlertComingPageState extends State<OnAlertComingPage> {
               Text("Han pasado ${state.getMinutes()} minutos", style:alertTimertStyle, textAlign: TextAlign.center,),
               FlatButton(
                 // color: secondary,
-                onPressed: (){},
+                onPressed: () async {
+                  await prefs.removeState();
+                  await prefs.removeDocumentAlertId();
+                  Navigator.of(context).pushReplacementNamed("app");
+                },
                 child: Text("ir a home", style:markAsReadedText,),
               ),
               SizedBox(height: 60,),
@@ -448,6 +482,7 @@ class _OnAlertComingPageState extends State<OnAlertComingPage> {
     );
   }
   Drawer rejectedStateDrawer(){
+    final prefs = new UserPreferences();
     return Drawer(
       child: Consumer<CreatedTimeProvider>(
         builder: (context,state,child){
@@ -470,7 +505,11 @@ class _OnAlertComingPageState extends State<OnAlertComingPage> {
             Text("Han pasado ${state.getMinutes()} minutos", style:alertTimertStyle,textAlign: TextAlign.center,),
             FlatButton(
               // color: secondary,
-              onPressed: (){},
+              onPressed: () async {
+                await prefs.removeState();
+                await prefs.removeDocumentAlertId();
+                Navigator.of(context).pushReplacementNamed("home");
+              },
               child: Text("ir a home", style:markAsReadedText,),
             ),
             SizedBox(height: 60,),

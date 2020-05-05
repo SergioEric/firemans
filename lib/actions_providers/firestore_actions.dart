@@ -15,16 +15,16 @@ class FirestoreActions {
 
   // final String pushToken = prefs.getPushToken();
   final alertCollection = Firestore.instance.collection("alerts");
-  final tokenDocument = Firestore.instance.collection("fireman_info").document('bomberosToken');
+  final firemanDoc = Firestore.instance.collection("fireman_info").document('information');
 
   saveTokenToFireStore(String token) async {
-   DocumentSnapshot doc =  await tokenDocument.get();
+   DocumentSnapshot doc =  await firemanDoc.get();
    if(doc.exists){
-    await tokenDocument.updateData({
+    await firemanDoc.updateData({
       "token" : token,
     });
    }else{
-    await tokenDocument.setData({
+    await firemanDoc.setData({
       "token" : token,
     });
    }
@@ -54,6 +54,12 @@ class FirestoreActions {
     }
 
     return data;
+  }
+
+  Future<void> updateState(bool value) async {
+    await firemanDoc.updateData({
+      "state" : value
+    });
   }
 
 }

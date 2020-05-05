@@ -39,6 +39,7 @@ class PushNotificationProvider {
         if(message["data"]["call"] != null){
           _streamController.sink.add(typeCall);
         }else{
+          print("_streamController.sink.add(docId);");
           _streamController.sink.add(docId);
         }
       },
@@ -50,8 +51,14 @@ class PushNotificationProvider {
       onResume: (Map<String, dynamic> message) async {
         print("············· onResume: $message");
         // print(message);
+        print("DateTime.now() = ${DateTime.now()}");
         String docId = message["data"]["id"] ?? 'no-data';
-        _streamController.sink.add(docId);
+        String typeCall = message["data"]["call"] ?? null;
+        if(message["data"]["call"] != null){
+          _streamController.sink.add(typeCall);
+        }else{
+          _streamController.sink.add(docId);
+        }      
       },
     );
   }

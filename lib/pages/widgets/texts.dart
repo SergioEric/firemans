@@ -56,4 +56,8 @@ TextStyle markAsReadedText = GoogleFonts.signika(
   decoration : TextDecoration.underline
 );
 
-
+TextStyle firemanStateMessageTextStyle = GoogleFonts.signika(
+  fontSize: 25,
+  color: my_red,
+  fontWeight: FontWeight.bold
+);

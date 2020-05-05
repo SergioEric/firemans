@@ -12,7 +12,7 @@ class HomePage extends StatelessWidget {
   void checkState(context) async {
     if(prefs.getState() != null){
       // ? alert received
-      if(prefs.getDocumentAlertId() !=null){
+      if(prefs.getDocumentAlertId() != null){
         Navigator.of(context).pushReplacementNamed("on_alert_coming", arguments: prefs.getDocumentAlertId());
       }
     }

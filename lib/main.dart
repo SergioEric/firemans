@@ -66,7 +66,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     pushProvider.message.listen((message){
-      print(message);
+      print("message on init of MyApp page $message");
       if(message.length > 5) {
         // if is not a call, 
         navigatorkey.currentState.pushReplacementNamed("on_alert_coming", arguments: message);
@@ -79,9 +79,18 @@ class _MyAppState extends State<MyApp> {
       //     break;
       // }
     });
-
   } 
-
+  wacthForSink(){
+    print("wacthForSink");
+    pushProvider.message.listen((message){
+      print("message on init of MyApp page $message");
+      if(message.length > 5) {
+        // if is not a call, 
+        print("message.length > 5");
+        navigatorkey.currentState.pushReplacementNamed("on_alert_coming", arguments: message);
+      }
+    });
+  }
   @override
   void dispose() {
     super.dispose();
@@ -90,6 +99,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    // wacthForSink();
     return ChangeNotifierProvider(
       create: (_)=>CreatedTimeProvider(),
           child: MaterialApp(
@@ -100,6 +110,7 @@ class _MyAppState extends State<MyApp> {
           ),
           home: HomePage(),
           routes: {
+            'app' :   (_)=> MyApp(),
             'home' : (_)=>HomePage(),
             'on_alert_coming' : (_)=>OnAlertComingPage(),
             'video_call_page' : (_)=>VideoCallPage()
