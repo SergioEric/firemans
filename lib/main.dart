@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:maps_launcher/maps_launcher.dart';
@@ -24,7 +25,7 @@ void main() async {
   final pushProvider = new PushNotificationProvider();
   final authUser = FirebaseAuthentication();
   pushProvider.createContrustor();
-  pushProvider.watchStates();
+  // pushProvider.watchStates();
   bool session = await authUser.isSignedIn();
   String token = '';
   FirestoreActions fstore = FirestoreActions();
@@ -61,24 +62,51 @@ class _MyAppState extends State<MyApp> {
 
   final GlobalKey<NavigatorState> navigatorkey = GlobalKey<NavigatorState>();
   final pushProvider = new PushNotificationProvider();
+  FirebaseMessaging _firebaseMessaging;
 
   @override
   void initState() {
     super.initState();
-    pushProvider.message.listen((message){
-      print("message on init of MyApp page $message");
-      if(message.length > 5) {
-        // if is not a call, 
-        navigatorkey.currentState.pushReplacementNamed("on_alert_coming", arguments: message);
-      }
-      // switch(message){
-      //   case 'audio':
-      //     navigatorkey.currentState.pushNamed("video_call_page", arguments: message);
-      //     break;
-      //   default:
-      //     break;
-      // }
-    });
+    this._firebaseMessaging = FirebaseMessaging();
+    _firebaseMessaging.configure(
+      onMessage: (Map<String, dynamic> message) async {
+        print("············· onMessage: $message");
+        print("FROM INITSTATE on MAIN - DateTime.now() = ${DateTime.now()}");
+        String docId = message["data"]["id"] ?? 'no-data';
+        String typeCall = message["data"]["call"] ?? null;
+        if(message["data"]["call"] != null){
+          // _streamController.sink.add(typeCall);
+        }else{
+          // print("_streamController.sink.add(docId);");
+          navigatorkey.currentState.pushReplacementNamed("on_alert_coming", arguments: docId);
+        }
+      },
+      // onBackgroundMessage: myBackgroundMessageHandler,
+      onLaunch: (Map<String, dynamic> message) async {
+        print("············· onLaunch: $message");
+        // print(message);
+        print("FROM INITSTATE on MAIN - DateTime.now() = ${DateTime.now()}");
+        String docId = message["data"]["id"] ?? 'no-data';
+        // String typeCall = message["data"]["call"] ?? null;
+        if(message["data"]["call"] != null){
+          // _streamController.sink.add(typeCall);
+        }else{
+          navigatorkey.currentState.pushReplacementNamed("on_alert_coming", arguments: docId);
+        }   
+      },
+      onResume: (Map<String, dynamic> message) async {
+        print("············· onResume: $message");
+        // print(message);
+        print("FROM INITSTATE on MAIN - DateTime.now() = ${DateTime.now()}");
+        String docId = message["data"]["id"] ?? 'no-data';
+        String typeCall = message["data"]["call"] ?? null;
+        if(message["data"]["call"] != null){
+          // _streamController.sink.add(typeCall);
+        }else{
+          navigatorkey.currentState.pushReplacementNamed("on_alert_coming", arguments: docId);
+        }      
+      },
+    );
   } 
   wacthForSink(){
     print("wacthForSink");
@@ -94,7 +122,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void dispose() {
     super.dispose();
-    pushProvider.dispose();
+    // pushProvider.dispose();
   }
 
   @override

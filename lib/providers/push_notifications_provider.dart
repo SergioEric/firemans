@@ -32,7 +32,7 @@ class PushNotificationProvider {
     print("watching States ··················");
   _firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) async {
-        print("············· onMessage: $message");
+        print("············· onMessage: $message PushNotificationProvider");
         print("DateTime.now() = ${DateTime.now()}");
         String docId = message["data"]["id"] ?? 'no-data';
         String typeCall = message["data"]["call"] ?? null;
@@ -44,12 +44,20 @@ class PushNotificationProvider {
         }
       },
       // onBackgroundMessage: myBackgroundMessageHandler,
-      onLaunch: (Map<String, dynamic> message) async {
-        print("············· onLaunch: $message");
-        // print(message);
-      },
+      // onLaunch: (Map<String, dynamic> message) async {
+      //   print("············· onLaunch: $message PushNotificationProvider");
+      //   // print(message);
+      //   print("DateTime.now() = ${DateTime.now()}");
+      //   String docId = message["data"]["id"] ?? 'no-data';
+      //   String typeCall = message["data"]["call"] ?? null;
+      //   if(message["data"]["call"] != null){
+      //     _streamController.sink.add(typeCall);
+      //   }else{
+      //     _streamController.sink.add(docId);
+      //   }   
+      // },
       onResume: (Map<String, dynamic> message) async {
-        print("············· onResume: $message");
+        print("············· onResume: $message PushNotificationProvider");
         // print(message);
         print("DateTime.now() = ${DateTime.now()}");
         String docId = message["data"]["id"] ?? 'no-data';

@@ -42,8 +42,9 @@ class _OnAlertComingPageState extends State<OnAlertComingPage> {
   void initState() {
     super.initState();
     fstore = FirestoreActions();
+    pushProvider.watchStates();
     pushProvider.message.listen((message){
-      // print(message);
+      print("OnAlertComingPage $message");
       switch(message){
         case 'video':
           showCallBox = true;
@@ -244,7 +245,7 @@ class _OnAlertComingPageState extends State<OnAlertComingPage> {
                                     await prefs.removeState();
                                     await prefs.removeDocumentAlertId();
                                     Navigator.pop(context);
-                                    Navigator.of(context).pushReplacementNamed("home");
+                                    Navigator.of(context).pushReplacementNamed("app");
                                     // }
                                     // alertAcepted = 2;
                                     // setState(() {
@@ -508,7 +509,7 @@ class _OnAlertComingPageState extends State<OnAlertComingPage> {
               onPressed: () async {
                 await prefs.removeState();
                 await prefs.removeDocumentAlertId();
-                Navigator.of(context).pushReplacementNamed("home");
+                Navigator.of(context).pushReplacementNamed("app");
               },
               child: Text("ir a home", style:markAsReadedText,),
             ),
