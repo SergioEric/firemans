@@ -116,12 +116,18 @@ class _OnAlertComingPageState extends State<OnAlertComingPage> {
                 if(snapshot.hasData) {
                   prefs.setDocumentAlertId(doc);
                   prefs.setState(snapshot.data.state);
+                  Timer(Duration(milliseconds: 0),(){
+                    provider.state = snapshot.data.state;
+                  });
+                  // !bug .then((a){ 
+                  //   setState((){});
+                  // });
                   // Timestamp now = Timestamp.fromDate(DateTime.now());
                   DateTime now = DateTime.now();
                   DateTime created = snapshot.data.created.toDate();
                   int difference = now.difference(created).inMinutes;
                   // print(difference);
-                  Timer(Duration(milliseconds: 0),(){
+                  Timer(Duration(milliseconds: 100),(){
                     // setState(() {
                     //   this.difference = difference;
                     // });
@@ -133,7 +139,7 @@ class _OnAlertComingPageState extends State<OnAlertComingPage> {
                       margin: EdgeInsets.only(top: 40),
                       child: Align(
                       alignment: Alignment.topCenter,
-                      child: Text("${snapshot.data.category}", style: categoryTextStyle,),)),
+                      child: Text("${snapshot.data.category}", style: categoryTextStyle,textAlign: TextAlign.center,),)),
                     Align(
                       alignment: Alignment.center,
                       child: GestureDetector(
@@ -187,91 +193,182 @@ class _OnAlertComingPageState extends State<OnAlertComingPage> {
                  );
               },
             ),
-            (prefs.getState() == 0)
-              ? Container(
-              margin: EdgeInsets.only(bottom: 10),
-              child: Align(
-                alignment: Alignment.bottomCenter,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                      RawMaterialButton(
-                        shape: CircleBorder(),
-                        padding: EdgeInsets.all(8),
-                        child: Icon(Icons.done, color: Colors.white,),
-                        fillColor:Colors.green,  
-                        onPressed: () async{
-                          //TODO hide action buttons
-                          await fstore.acceptOrRejectAlert(document: doc, state: 1);
-                          await fstore.updateState(true);
-                          // alertAcepted = 1;
-                          prefs.setState(1);
-                          setState(() {
-                          });
-                        },
+            Consumer<CreatedTimeProvider>(
+              builder: (context,fireman,child){
+                if(fireman.state == 0){
+                  return Container(
+                    margin: EdgeInsets.only(bottom: 10),
+                    child: Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                            RawMaterialButton(
+                              shape: CircleBorder(),
+                              padding: EdgeInsets.all(8),
+                              child: Icon(Icons.done, color: Colors.white,),
+                              fillColor:Colors.green,  
+                              onPressed: () async{
+                                //TODO hide action buttons
+                                await fstore.acceptOrRejectAlert(document: doc, state: 1);
+                                await fstore.updateState(true);
+                                // alertAcepted = 1;
+                                prefs.setState(1);
+                                setState(() {
+                                });
+                              },
+                            ),
+                            Text("aceptar", style: TextStyle(
+                              // fontSize : 23
+                            ))
+                          ],),
+                          Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                            RawMaterialButton(
+                              shape: CircleBorder(),
+                              padding: EdgeInsets.all(8),
+                              child: Icon(Icons.close,  color: Colors.white),
+                              fillColor:Colors.redAccent,  
+                              onPressed: (){
+                                showDialog(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  builder: (context)=>AlertDialog(
+                                    title: Text("¿Estas seguro?"),
+                                    // content: Text("content"),
+                                    actions: <Widget>[
+                                      FlatButton(
+                                        // shape: CircleBorder(),
+                                        // color: Colors.greenAccent,
+                                        child: Text("Si",style: TextStyle(fontSize: 20),),
+                                        onPressed: () async{
+                                          await fstore.acceptOrRejectAlert(document: doc, state: 2);
+                                          // prefs.setState(2);
+                                          // if(prefs.getState() != null){
+                                            // ? alert rejected
+                                          await prefs.removeState();
+                                          await prefs.removeDocumentAlertId();
+                                          Navigator.pop(context);
+                                          Navigator.of(context).pushReplacementNamed("app");
+                                          // }
+                                          // alertAcepted = 2;
+                                          // setState(() {
+                                          // });
+                                        }
+                                      ),
+                                      FlatButton(
+                                        child: Text("No",style: TextStyle(fontSize: 20),),
+                                        onPressed: (){
+                                          Navigator.pop(context);
+                                        },
+                                      ),
+                                    ],
+                                  )
+                                );
+                              },
+                            ),
+                            Text("rechazar", style: TextStyle(
+                              // fontSize : 23
+                            ))
+                          ],),
+                          // SizedBox(width: 40,),
+                        ],
                       ),
-                      Text("aceptar", style: TextStyle(
-                        // fontSize : 23
-                      ))
-                    ],),
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                      RawMaterialButton(
-                        shape: CircleBorder(),
-                        padding: EdgeInsets.all(8),
-                        child: Icon(Icons.close,  color: Colors.white),
-                        fillColor:Colors.redAccent,  
-                        onPressed: (){
-                          showDialog(
-                            context: context,
-                            barrierDismissible: false,
-                            builder: (context)=>AlertDialog(
-                              title: Text("¿Estas seguro?"),
-                              // content: Text("content"),
-                              actions: <Widget>[
-                                FlatButton(
-                                  // shape: CircleBorder(),
-                                  // color: Colors.greenAccent,
-                                  child: Text("Si",style: TextStyle(fontSize: 20),),
-                                  onPressed: () async{
-                                    await fstore.acceptOrRejectAlert(document: doc, state: 2);
-                                    // prefs.setState(2);
-                                    // if(prefs.getState() != null){
-                                      // ? alert rejected
-                                    await prefs.removeState();
-                                    await prefs.removeDocumentAlertId();
-                                    Navigator.pop(context);
-                                    Navigator.of(context).pushReplacementNamed("app");
-                                    // }
-                                    // alertAcepted = 2;
-                                    // setState(() {
-                                    // });
-                                  }
-                                ),
-                                FlatButton(
-                                  child: Text("No",style: TextStyle(fontSize: 20),),
-                                  onPressed: (){
-                                    Navigator.pop(context);
-                                  },
-                                ),
-                              ],
-                            )
-                          );
-                        },
-                      ),
-                      Text("rechazar", style: TextStyle(
-                        // fontSize : 23
-                      ))
-                    ],),
-                    // SizedBox(width: 40,),
-                  ],
-                ),
-              ),
-            ) : Container(),
+                    ),
+                  );
+                }
+                return Container();
+              },
+            ),
+            // (prefs.getState() == 0)
+            //   ? Container(
+            //   margin: EdgeInsets.only(bottom: 10),
+            //   child: Align(
+            //     alignment: Alignment.bottomCenter,
+            //     child: Row(
+            //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //       children: <Widget>[
+            //         Column(
+            //           mainAxisSize: MainAxisSize.min,
+            //           children: <Widget>[
+            //           RawMaterialButton(
+            //             shape: CircleBorder(),
+            //             padding: EdgeInsets.all(8),
+            //             child: Icon(Icons.done, color: Colors.white,),
+            //             fillColor:Colors.green,  
+            //             onPressed: () async{
+            //               //TODO hide action buttons
+            //               await fstore.acceptOrRejectAlert(document: doc, state: 1);
+            //               await fstore.updateState(true);
+            //               // alertAcepted = 1;
+            //               prefs.setState(1);
+            //               setState(() {
+            //               });
+            //             },
+            //           ),
+            //           Text("aceptar", style: TextStyle(
+            //             // fontSize : 23
+            //           ))
+            //         ],),
+            //         Column(
+            //           mainAxisSize: MainAxisSize.min,
+            //           children: <Widget>[
+            //           RawMaterialButton(
+            //             shape: CircleBorder(),
+            //             padding: EdgeInsets.all(8),
+            //             child: Icon(Icons.close,  color: Colors.white),
+            //             fillColor:Colors.redAccent,  
+            //             onPressed: (){
+            //               showDialog(
+            //                 context: context,
+            //                 barrierDismissible: false,
+            //                 builder: (context)=>AlertDialog(
+            //                   title: Text("¿Estas seguro?"),
+            //                   // content: Text("content"),
+            //                   actions: <Widget>[
+            //                     FlatButton(
+            //                       // shape: CircleBorder(),
+            //                       // color: Colors.greenAccent,
+            //                       child: Text("Si",style: TextStyle(fontSize: 20),),
+            //                       onPressed: () async{
+            //                         await fstore.acceptOrRejectAlert(document: doc, state: 2);
+            //                         // prefs.setState(2);
+            //                         // if(prefs.getState() != null){
+            //                           // ? alert rejected
+            //                         await prefs.removeState();
+            //                         await prefs.removeDocumentAlertId();
+            //                         Navigator.pop(context);
+            //                         Navigator.of(context).pushReplacementNamed("app");
+            //                         // }
+            //                         // alertAcepted = 2;
+            //                         // setState(() {
+            //                         // });
+            //                       }
+            //                     ),
+            //                     FlatButton(
+            //                       child: Text("No",style: TextStyle(fontSize: 20),),
+            //                       onPressed: (){
+            //                         Navigator.pop(context);
+            //                       },
+            //                     ),
+            //                   ],
+            //                 )
+            //               );
+            //             },
+            //           ),
+            //           Text("rechazar", style: TextStyle(
+            //             // fontSize : 23
+            //           ))
+            //         ],),
+            //         // SizedBox(width: 40,),
+            //       ],
+            //     ),
+            //   ),
+            // ) : Container(),
             Container(
               margin: EdgeInsets.only(bottom:10),
               child: Align(

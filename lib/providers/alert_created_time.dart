@@ -12,4 +12,12 @@ class CreatedTimeProvider with ChangeNotifier{
     notifyListeners();
   }
 
+  int _state;
+
+  int get state => this._state;
+
+  set state(int val){
+    this._state = val;
+    notifyListeners();
+  }
 }

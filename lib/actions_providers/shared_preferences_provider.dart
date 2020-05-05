@@ -36,7 +36,7 @@ class UserPreferences {
     await _prefs.remove('token');
   }
   
-  void setState(int value)async {
+  Future<void> setState(int value)async {
     await _prefs.setInt('state', value);
   }
   int getState() {
