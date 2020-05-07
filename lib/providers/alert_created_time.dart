@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 
 class CreatedTimeProvider with ChangeNotifier{
@@ -29,4 +30,13 @@ class CreatedTimeProvider with ChangeNotifier{
     this._userId = id;
     // notifyListeners();
   }
+
+  LatLng _location;
+
+  LatLng get location => this._location;
+
+  void setLocation(double lat, double lon){
+    this._location = LatLng(lat, lon);
+  }
+
 }

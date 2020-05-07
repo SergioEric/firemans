@@ -6,8 +6,12 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/directions_provider.dart';
+import 'widgets/status_bar.dart';
 
 class MapsPage extends StatefulWidget {
+  final LatLng alertPosition;
+
+  MapsPage({ @required this.alertPosition});
 
   @override
   _MapsPageState createState() => _MapsPageState();
@@ -18,12 +22,19 @@ class _MapsPageState extends State<MapsPage> {
 
   GoogleMapController _mapController;
 
-  // static final alertPosition = LatLng(8.9372859, -75.4413706);
-  static final alertPosition = LatLng(8.9466781, -75.4430247); //parque central
+  LatLng alertPosition;
+  @override
+  void initState(){
+    super.initState();
+    alertPosition = widget.alertPosition;
+
+  }
+
+  // static final alertPosition = LatLng(8.9466781, -75.4430247); //parque central
   static final bomberosPosition = LatLng(8.9354, -75.4411);
 
   static final CameraPosition _kGooglePlex = CameraPosition(
-    target: alertPosition,
+    target: bomberosPosition,
     zoom: 14.4746,
     // zoom: 19.151926040649414,
   );
@@ -36,6 +47,7 @@ class _MapsPageState extends State<MapsPage> {
 
 @override
   Widget build(BuildContext context) {
+    defaultStatusBar();
     return Stack(
       children: <Widget>[
         Container(
@@ -77,7 +89,8 @@ class _MapsPageState extends State<MapsPage> {
     
     temp.add(Marker(
       position: bomberosPosition,
-      markerId: MarkerId("m2 bomberosPosition")
+      markerId: MarkerId("m2 bomberosPosition"),
+      infoWindow : InfoWindow(title: "Bomberos")
     ));
 
     return temp;

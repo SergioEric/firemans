@@ -61,3 +61,15 @@ TextStyle firemanStateMessageTextStyle = GoogleFonts.signika(
   color: my_red,
   fontWeight: FontWeight.bold
 );
+
+TextStyle onCallInComingStyle = GoogleFonts.signika(
+  fontSize: 30,
+  color: obscure,
+  fontWeight: FontWeight.normal
+);
+
+TextStyle homePageMessageStyle = GoogleFonts.signika(
+  fontSize: 35,
+  color: obscure,
+  fontWeight: FontWeight.w200
+);

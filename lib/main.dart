@@ -8,6 +8,7 @@ import 'actions_providers/firestore_actions.dart';
 import 'actions_providers/login_action.dart';
 import 'pages/home_page.dart';
 import 'pages/on_alert_coming_page.dart';
+import 'pages/widgets/status_bar.dart';
 import 'providers/alert_created_time.dart';
 import 'providers/push_notifications_provider.dart';
 import 'package:provider/provider.dart';
@@ -48,7 +49,6 @@ void main() async {
     prefs.setPushToken(token);
   }
   print(token);
-
   runApp(MyApp());
 }
 
@@ -128,6 +128,11 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     // wacthForSink();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.portraitUp,
+    ]);
+    defaultStatusBar();
     return ChangeNotifierProvider(
       create: (_)=>CreatedTimeProvider(),
           child: MaterialApp(

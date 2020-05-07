@@ -19,6 +19,8 @@ import './widgets/styling.dart';
 
 import 'package:vector_math/vector_math_64.dart' show Vector3;
 
+import 'widgets/status_bar.dart';
+
 class OnAlertComingPage extends StatefulWidget {
   @override
   _OnAlertComingPageState createState() => _OnAlertComingPageState();
@@ -83,12 +85,7 @@ class _OnAlertComingPageState extends State<OnAlertComingPage> {
 
   @override
   Widget build(BuildContext context) {
-    // SystemChrome.setSystemUIOverlayStyle(
-    //   SystemUiOverlayStyle(
-    //     statusBarColor: Colors.transparent,
-    //     statusBarBrightness: Brightness.dark
-    //   )
-    // );
+    defaultStatusBar();
     final String doc = ModalRoute.of(context).settings.arguments;
     final prefs = new UserPreferences();
     final alert = fstore.getDocument(doc);
@@ -117,6 +114,7 @@ class _OnAlertComingPageState extends State<OnAlertComingPage> {
                   prefs.setDocumentAlertId(doc);
                   prefs.setState(snapshot.data.state);
                   provider.userId = snapshot.data.userId;
+                  provider.setLocation(snapshot.data.latitude, snapshot.data.longitude);
                   Timer(Duration(milliseconds: 0),(){
                     provider.state = snapshot.data.state;
                   });
@@ -310,6 +308,7 @@ class _OnAlertComingPageState extends State<OnAlertComingPage> {
   }
 
   Widget mapsButton(){
+    CreatedTimeProvider provider = Provider.of<CreatedTimeProvider>(context, listen: false);
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
@@ -317,7 +316,7 @@ class _OnAlertComingPageState extends State<OnAlertComingPage> {
           onPressed: (){
             print("goto maps");
             Navigator.of(context).push(
-              MaterialPageRoute(builder: (_)=>MapsPage())
+              MaterialPageRoute(builder: (_)=>MapsPage(alertPosition:provider.location,))
             );
           },
           // shape: CircleBorder(),
@@ -342,6 +341,10 @@ class _OnAlertComingPageState extends State<OnAlertComingPage> {
       child: Stack(
         children: <Widget>[
           Container(
+            alignment: Alignment.center,
+            child: Text("Llamada entrante", style:onCallInComingStyle,),
+          ),
+          Container(
             margin: EdgeInsets.only(bottom: 150),
             child: Align(
               alignment: Alignment.bottomCenter,
@@ -349,7 +352,22 @@ class _OnAlertComingPageState extends State<OnAlertComingPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
                 RawMaterialButton(
+                  padding: EdgeInsets.all(12),
+                  fillColor: Colors.red,
+                  shape: CircleBorder(),
+                  onPressed: (){
+                    FlutterRingtonePlayer.stop();
+                    Vibration.cancel();
+                    showCallBox = false;
+                    setState(() {
+                    });
+                  },
+                  child: Icon(Icons.call_end,color:light,size: 35),
+                ),
+                RawMaterialButton(
+                  padding: EdgeInsets.all(12),
                   fillColor: Colors.green,
+                  shape: CircleBorder(),
                   onPressed: (){
                     FlutterRingtonePlayer.stop();
                     Vibration.cancel();
@@ -358,18 +376,7 @@ class _OnAlertComingPageState extends State<OnAlertComingPage> {
                     });
                     Navigator.of(context).pushNamed("video_call_page");
                   },
-                  child: Icon(Icons.call)
-                ),
-                RawMaterialButton(
-                  fillColor: Colors.red,
-                  onPressed: (){
-                    FlutterRingtonePlayer.stop();
-                    Vibration.cancel();
-                    showCallBox = false;
-                    setState(() {
-                    });
-                  },
-                  child: Icon(Icons.call_end),
+                  child: Icon(Icons.call, color: light,size: 35,)
                 ),
               ],),
             ),

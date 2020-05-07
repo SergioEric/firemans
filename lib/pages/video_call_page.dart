@@ -3,6 +3,8 @@ import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'widgets/status_bar.dart';
+
 // Agora AppId
 const String APP_ID = '44bd4f6553754929b4fded09c4729c92';
 
@@ -334,12 +336,7 @@ class _CallPageState extends State<VideoCallPage> {
 
   @override
   Widget build(BuildContext context) {
-    // SystemChrome.setSystemUIOverlayStyle(
-    //   SystemUiOverlayStyle(
-    //     statusBarColor: Colors.transparent,
-    //     statusBarBrightness: Brightness.light
-    //   )
-    // );
+    defaultStatusBar();
     return WillPopScope(
       onWillPop: ()async {
         return false;
