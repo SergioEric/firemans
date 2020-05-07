@@ -116,6 +116,7 @@ class _OnAlertComingPageState extends State<OnAlertComingPage> {
                 if(snapshot.hasData) {
                   prefs.setDocumentAlertId(doc);
                   prefs.setState(snapshot.data.state);
+                  provider.userId = snapshot.data.userId;
                   Timer(Duration(milliseconds: 0),(){
                     provider.state = snapshot.data.state;
                   });
@@ -160,14 +161,19 @@ class _OnAlertComingPageState extends State<OnAlertComingPage> {
                   ];
                 }else if (snapshot.hasError) {
                   children = [
-                    Icon(
-                      Icons.error_outline,
-                      color: Colors.red,
-                      size: 60,
-                    ),
                     Container(
                       alignment: Alignment.center,
-                      child: Text('Error: ${snapshot.error}', style:firemanStateMessageTextStyle, textAlign: TextAlign.center,),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                           Icon(
+                            Icons.error_outline,
+                            color: Colors.red,
+                            size: 50,
+                          ),
+                          Text('Error: ${snapshot.error}', style:firemanStateMessageTextStyle, textAlign: TextAlign.center,),
+                        ],
+                      ),
                     )
                   ];
                 }else {
@@ -215,6 +221,8 @@ class _OnAlertComingPageState extends State<OnAlertComingPage> {
                                 //TODO hide action buttons
                                 await fstore.acceptOrRejectAlert(document: doc, state: 1);
                                 await fstore.updateState(true);
+                                var user = Provider.of<CreatedTimeProvider>(context, listen: false).userId;
+                                await fstore.updateAlertOwner(user);
                                 // alertAcepted = 1;
                                 prefs.setState(1);
                                 setState(() {
@@ -253,7 +261,7 @@ class _OnAlertComingPageState extends State<OnAlertComingPage> {
                                           await prefs.removeState();
                                           await prefs.removeDocumentAlertId();
                                           Navigator.pop(context);
-                                          Navigator.of(context).pushReplacementNamed("app");
+                                          Navigator.of(context).pushReplacementNamed("home");
                                           // }
                                           // alertAcepted = 2;
                                           // setState(() {
@@ -284,91 +292,6 @@ class _OnAlertComingPageState extends State<OnAlertComingPage> {
                 return Container();
               },
             ),
-            // (prefs.getState() == 0)
-            //   ? Container(
-            //   margin: EdgeInsets.only(bottom: 10),
-            //   child: Align(
-            //     alignment: Alignment.bottomCenter,
-            //     child: Row(
-            //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //       children: <Widget>[
-            //         Column(
-            //           mainAxisSize: MainAxisSize.min,
-            //           children: <Widget>[
-            //           RawMaterialButton(
-            //             shape: CircleBorder(),
-            //             padding: EdgeInsets.all(8),
-            //             child: Icon(Icons.done, color: Colors.white,),
-            //             fillColor:Colors.green,  
-            //             onPressed: () async{
-            //               //TODO hide action buttons
-            //               await fstore.acceptOrRejectAlert(document: doc, state: 1);
-            //               await fstore.updateState(true);
-            //               // alertAcepted = 1;
-            //               prefs.setState(1);
-            //               setState(() {
-            //               });
-            //             },
-            //           ),
-            //           Text("aceptar", style: TextStyle(
-            //             // fontSize : 23
-            //           ))
-            //         ],),
-            //         Column(
-            //           mainAxisSize: MainAxisSize.min,
-            //           children: <Widget>[
-            //           RawMaterialButton(
-            //             shape: CircleBorder(),
-            //             padding: EdgeInsets.all(8),
-            //             child: Icon(Icons.close,  color: Colors.white),
-            //             fillColor:Colors.redAccent,  
-            //             onPressed: (){
-            //               showDialog(
-            //                 context: context,
-            //                 barrierDismissible: false,
-            //                 builder: (context)=>AlertDialog(
-            //                   title: Text("¿Estas seguro?"),
-            //                   // content: Text("content"),
-            //                   actions: <Widget>[
-            //                     FlatButton(
-            //                       // shape: CircleBorder(),
-            //                       // color: Colors.greenAccent,
-            //                       child: Text("Si",style: TextStyle(fontSize: 20),),
-            //                       onPressed: () async{
-            //                         await fstore.acceptOrRejectAlert(document: doc, state: 2);
-            //                         // prefs.setState(2);
-            //                         // if(prefs.getState() != null){
-            //                           // ? alert rejected
-            //                         await prefs.removeState();
-            //                         await prefs.removeDocumentAlertId();
-            //                         Navigator.pop(context);
-            //                         Navigator.of(context).pushReplacementNamed("app");
-            //                         // }
-            //                         // alertAcepted = 2;
-            //                         // setState(() {
-            //                         // });
-            //                       }
-            //                     ),
-            //                     FlatButton(
-            //                       child: Text("No",style: TextStyle(fontSize: 20),),
-            //                       onPressed: (){
-            //                         Navigator.pop(context);
-            //                       },
-            //                     ),
-            //                   ],
-            //                 )
-            //               );
-            //             },
-            //           ),
-            //           Text("rechazar", style: TextStyle(
-            //             // fontSize : 23
-            //           ))
-            //         ],),
-            //         // SizedBox(width: 40,),
-            //       ],
-            //     ),
-            //   ),
-            // ) : Container(),
             Container(
               margin: EdgeInsets.only(bottom:10),
               child: Align(
@@ -380,17 +303,6 @@ class _OnAlertComingPageState extends State<OnAlertComingPage> {
                 alignment: Alignment.bottomCenter,
                 child: SizedBox(height: size.height * 0.01,
                   child: Container(color:primary),))
-            // (prefs.getState() == 0) ?
-            //   Container(child: Align(
-            //     alignment: Alignment.bottomRight,
-            //     child: Text("received", style: TextStyle(color: Colors.red),)),)
-            //     : (prefs.getState() == 1) 
-            //       ? Container(child: Align(
-            //         alignment: Alignment.bottomRight,
-            //         child: Text("accepted")),)
-            //           : Container(child: Align(
-            //             alignment: Alignment.bottomRight,
-            //             child: Text("rejected")),)
           ],
         ),
    ),
@@ -528,9 +440,11 @@ class _OnAlertComingPageState extends State<OnAlertComingPage> {
                   // ? accepted alert
                   await fstore.acceptOrRejectAlert(document: doc, state: 3);
                   await fstore.updateState(false);
+                  await fstore.updateAlertOwner("empty");
                   await prefs.removeState();
                   await prefs.removeDocumentAlertId();
-                  Navigator.of(context).pushReplacementNamed("app");
+                  //! when is redirect to "app" cause onLaunch event on fcm
+                  Navigator.of(context).pushReplacementNamed("home");
                 },
                 child: Text("marcar como atendida", style:markAsReadedText,),
               ),
@@ -568,7 +482,7 @@ class _OnAlertComingPageState extends State<OnAlertComingPage> {
                 onPressed: () async {
                   await prefs.removeState();
                   await prefs.removeDocumentAlertId();
-                  Navigator.of(context).pushReplacementNamed("app");
+                  Navigator.of(context).pushReplacementNamed("home");
                 },
                 child: Text("ir a home", style:markAsReadedText,),
               ),
@@ -606,7 +520,7 @@ class _OnAlertComingPageState extends State<OnAlertComingPage> {
               onPressed: () async {
                 await prefs.removeState();
                 await prefs.removeDocumentAlertId();
-                Navigator.of(context).pushReplacementNamed("app");
+                Navigator.of(context).pushReplacementNamed("home");
               },
               child: Text("ir a home", style:markAsReadedText,),
             ),

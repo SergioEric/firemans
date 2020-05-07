@@ -20,4 +20,13 @@ class CreatedTimeProvider with ChangeNotifier{
     this._state = val;
     notifyListeners();
   }
+
+  String _userId;
+
+  String get userId => this._userId;
+
+  set userId(String id){
+    this._userId = id;
+    // notifyListeners();
+  }
 }

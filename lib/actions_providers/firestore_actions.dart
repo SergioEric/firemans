@@ -62,4 +62,10 @@ class FirestoreActions {
     });
   }
 
+  Future<void> updateAlertOwner(documentRef) async{
+    await firemanDoc.updateData({
+      "userId" : documentRef
+    });
+  }
+
 }
